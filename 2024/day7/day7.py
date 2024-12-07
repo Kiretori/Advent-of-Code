@@ -30,6 +30,8 @@ print(valid_lines_sum)
 # Part 2
 
 valid_lines_sum2 = 0
+
+
 operators = {operator.concat, operator.add, operator.mul}
 
 
@@ -43,10 +45,11 @@ for line in tqdm(adv_input):
     for var in op_variation:
         result = right[0]
         for i, op in enumerate(var):
-            if op == operator.concat:
-                result = int(op(str(result), str(right[i+1])))
-            else:
-                result = op(result, right[i+1])
+            match op:
+                case operator.concat:
+                    result = int(op(str(result), str(right[i+1])))
+                case _:
+                    result = op(result, right[i+1])
 
         if result == total:
             valid_lines_sum2 += total
