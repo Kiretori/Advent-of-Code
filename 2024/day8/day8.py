@@ -46,13 +46,4 @@ for antenna, positions in antennas.items():
 
 
 
-debug_matrix = matrix.copy()
-
-for i in range(shape):
-    for j in range(shape):
-        if antinodes2[i,j]:
-            debug_matrix[i,j] = "#"
-
-
-print(debug_matrix)
 print(np.sum(antinodes2))
