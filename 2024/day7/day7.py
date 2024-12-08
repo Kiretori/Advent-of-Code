@@ -20,10 +20,14 @@ for line in tqdm(adv_input):
         result = right[0]
         for i, op in enumerate(var):
             result = op(result, right[i+1])
+            if result > total:
+                break
 
         if result == total:
             valid_lines_sum += total
             break
+        
+            
 
 print(valid_lines_sum)
 
