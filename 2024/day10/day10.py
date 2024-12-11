@@ -1,3 +1,4 @@
+import time
 from collections import deque
 from itertools import product
 import numpy as np
@@ -40,10 +41,14 @@ def bfs_search(matrix, start, target):
 
 zeroes = [(x, y) for (x, y) in product(range(shape), range(shape)) if matrix[x,y] == '0']
 
-
+start = time.perf_counter()
 p1_sum = sum(map(lambda pair: bfs_search(matrix, (pair[0], pair[1]), '9'), zeroes))
+
 print(p1_sum)
 
+end = time.perf_counter()
+
+print(f"Part 1: {(end - start):.6f} seconds")
 
 
 def bfs_count_distinct_paths(matrix, start, target):
@@ -69,5 +74,9 @@ def bfs_count_distinct_paths(matrix, start, target):
 
     return distinct_paths
 
+start = time.perf_counter()
 p2_sum = sum(map(lambda pair: bfs_count_distinct_paths(matrix, (pair[0], pair[1]), '9'), zeroes))
 print(p2_sum)
+end = time.perf_counter()
+
+print(f"Part 2: {(end - start):.6f} seconds")
