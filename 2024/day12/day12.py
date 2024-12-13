@@ -6,6 +6,7 @@ with open("day12/input12.txt", "r") as f:
     adv_input = f.readlines()
 
 matrix = np.array([list(line.strip()) for line in adv_input])
+
 shape = matrix.shape[0]
 
 
@@ -14,31 +15,31 @@ def get_regions(matrix):
     regions = {}
     region_id = 0
 
-    def bfs(start, char):
-
+    def dfs(start, char):
         directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]
         region_cells = []
-        queue = deque([start])
-       
+        stack = [start]  # Use a stack instead of a queue
 
-        while queue:
-            x, y = queue.popleft()
-        
-            if not (0 <= x < shape and 0 <= y < shape) or visited[x,y] or matrix[x,y] != char:
+        while stack:
+            x, y = stack.pop()  # Pop from the top of the stack
+
+            # Check bounds, visited, and character condition
+            if not (0 <= x < shape and 0 <= y < shape) or visited[x, y] or matrix[x, y] != char:
                 continue
-            
+
             visited[x, y] = True
             region_cells.append((x, y))
+
             for dx, dy in directions:
-                queue.append((x + dx, y + dy))
-        
+                stack.append((x + dx, y + dy))  # Add neighboring cells to the stack
+
         return region_cells
     
 
     for i, j in product(range(shape), range(shape)):
         if not visited[i, j]:
             char = matrix[i, j]
-            region_cells = bfs((i,j), char)
+            region_cells = dfs((i,j), char)
             regions[region_id] = {"Label": char, "Cells": region_cells} 
             region_id += 1
 
@@ -82,54 +83,73 @@ print(total_price)
 
 # Part 2 
 
+def count_borders(matrix, regions):
+    rows, cols = matrix.shape
+    directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]  # up, down, left, right
+    direction_names = ["up", "down", "left", "right"]
 
-def get_regions_with_sides(matrix):
-    visited = np.zeros(shape=(shape, shape), dtype=bool)
-    regions = {}
-    region_id = 0
+    def get_border_segments(region_cells, region_char):
+        border_segments = set()
+        for x, y in region_cells:
+            for d, (dx, dy) in enumerate(directions):
+                nx, ny = x + dx, y + dy
 
-    def bfs(start, char):
+                if not (0 <= nx < rows and 0 <= ny < cols) or matrix[nx, ny] != region_char:
 
-        directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]
-        region_cells = []
-        queue = deque([start])
+                    segment = ((x, y), direction_names[d])
+                    border_segments.add(segment)
+        return border_segments
 
-        sides = 0
-       
-        prev_cell = None
-        while queue:
-            x, y = queue.popleft()
-        
-            if not (0 <= x < shape and 0 <= y < shape) or visited[x,y] or matrix[x,y] != char:
-                continue
-            
-            visited[x, y] = True
-            region_cells.append((x, y))
+    def group_borders(border_segments):
+        visited = set()
+        borders = 0
 
-            if prev_cell is not None:
-                # If the current cell is not adjacent to the previous cell in a straight line
-                if abs(x - prev_cell[0]) + abs(y - prev_cell[1]) > 1:
-                    sides += 1
-            
-            prev_cell = (x, y)
+        def dfs(segment):
+            stack = [segment]
+            while stack:
+                current_segment = stack.pop()
+                if current_segment in visited:
+                    continue
+                visited.add(current_segment)
+                x, y = current_segment[0]
+                direction = current_segment[1]
 
-            for dx, dy in directions:
-                queue.append((x + dx, y + dy))
-        
-        if len(region_cells) == 1: sides = 4
+                for (dx, dy) in directions:
+                    nx, ny = x + dx, y + dy
+                    next_segment = ((nx, ny), direction)
+                    if next_segment in border_segments and next_segment not in visited:
+                        stack.append(next_segment)
 
-        return region_cells, sides
-    
+        for segment in border_segments:
+            if segment not in visited:
+                dfs(segment)
+                borders += 1
+        return borders
 
-    for i, j in product(range(shape), range(shape)):
-        if not visited[i, j]:
-            char = matrix[i, j]
-            region_cells, sides = bfs((i,j), char)
-            regions[region_id] = {"Label": char, "Sides": sides, "Cells": region_cells} 
-            region_id += 1
+    border_counts = {}
+
+    for region_id, region in regions.items():
+        region_char = region["Label"]
+        region_cells = region["Cells"]
+
+        border_segments = get_border_segments(region_cells, region_char)
+
+        borders_for_region = group_borders(border_segments)
+        border_counts[region_id] = borders_for_region
+
+    return border_counts
 
 
-    return regions
 
+area_per_id = {}
+for id, region in regions.items():
+    area_per_id[id] = len(region["Cells"])
 
-print(get_regions_with_sides(matrix))
+print(area_per_id)
+borders_per_id = count_borders(matrix, regions)
+
+sum_p2 = 0
+for id in area_per_id:
+    sum_p2 += area_per_id[id] * borders_per_id[id]
+
+print(sum_p2)
