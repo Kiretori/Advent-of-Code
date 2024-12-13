@@ -95,7 +95,6 @@ def count_borders(matrix, regions):
                 nx, ny = x + dx, y + dy
 
                 if not (0 <= nx < rows and 0 <= ny < cols) or matrix[nx, ny] != region_char:
-
                     segment = ((x, y), direction_names[d])
                     border_segments.add(segment)
         return border_segments
@@ -105,7 +104,7 @@ def count_borders(matrix, regions):
         borders = 0
 
         def dfs(segment):
-            stack = [segment]
+            stack = deque([segment])
             while stack:
                 current_segment = stack.pop()
                 if current_segment in visited:
