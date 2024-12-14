@@ -1,6 +1,10 @@
 from collections import defaultdict
+from re import findall
+from statistics import variance as var
 from PIL import Image
 import numpy as np
+
+
 with open("day14/input14.txt", "r") as f:
     adv_input = f.readlines()
 
@@ -50,4 +54,29 @@ def solve_part1(size_x, size_y, seconds):
 print(solve_part1(101, 103, 100))
 
 
+W, H = 101, 103
 
+robots2 = [[int(n) for n in findall(r"(-?\d+)", item)] for item in adv_input]
+
+bx = min(range(W), key=lambda t: var((s+t*v) % W for (s,_,v,_) in robots2))
+by = min(range(H), key=lambda t: var((s+t*v) % H for (_,s,_,v) in robots2))
+
+seconds_for_tree = bx+((pow(W, -1, H)*(by-bx)) % H)*W
+
+print("Part 2:", seconds_for_tree)
+
+
+
+def draw_image(W, H, seconds):
+    positions = get_positions(robots, W, H, seconds)
+    grid = np.zeros(shape=(H,W), dtype=int)
+    for pos in positions:
+        grid[pos[1], pos[0]] = 1
+
+    image_data = (grid * 255).astype(np.uint8)
+
+    image = Image.fromarray(image_data, mode="L") 
+
+    image.save("day14/tree.png")
+
+draw_image(W, H, seconds_for_tree)
