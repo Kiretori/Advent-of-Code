@@ -1,3 +1,14 @@
 */venv
 *.txt
 test.py
+
+debug/
+target/
+
+Cargo.lock
+
+**/*.rs.bk
+
+*.pdb
+
+rust_2021/
