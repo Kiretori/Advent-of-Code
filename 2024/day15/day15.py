@@ -60,6 +60,7 @@ def part1(grid, steps):
 print(f"Part 1: {part1(grid, steps)}")
 
 # PART 2
+# DISCLAIMER: NASTIEST AND MOST DISGUSTING CODE I've ever wrote down there  
 
 def enhance_grid(grid):
     big_grid = np.zeros(shape=(shape, shape*2), dtype=str)
