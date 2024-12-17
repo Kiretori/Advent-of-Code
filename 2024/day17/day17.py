@@ -110,7 +110,7 @@ def part1(registers):
 
     return(output)
 
-part1(registers)
+print(part1(registers))
 
 
 # PART 2
