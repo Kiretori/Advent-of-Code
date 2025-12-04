@@ -23,10 +23,10 @@ print(counter)
 counter = 0
 dial_pointer = 50  
 for line in adv_input:
-    dir = line[0]
+    direction = line[0]
     step = int(line[1:])
 
-    if dir == "R":
+    if direction == "R":
         
         counter += (dial_pointer + step) // 100
         dial_pointer = (dial_pointer + step) % 100
